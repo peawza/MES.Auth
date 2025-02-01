@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>$(Version_TargetFramework)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--<ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />
+  
+	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(Version_EntityFrameworkCore_PostgreSQL)" />
+  </ItemGroup>-->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(Version_EntityFrameworkCore)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(Version_EntityFrameworkCore)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(Version_EntityFrameworkCore)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="$(Version_EntityFrameworkCore)" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(Version_EntityFrameworkCore_PostgreSQL)" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\Application\" />
+    <Folder Include="Migrations\System\" />
+  </ItemGroup>
+
+</Project>

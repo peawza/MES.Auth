@@ -1,0 +1,11 @@
+--- Add migration ---
+dotnet ef migrations add "Initial" --context "ApplicationDbContext" --output-dir "Migrations\Application" -p "Database\ApplicationPostgreSQLDB\ApplicationPostgreSQLDB.csproj" -s "Services\Authentication\Authentication.csproj"
+dotnet ef migrations add "Initial" --context "SystemDbContext" --output-dir "Migrations\System" -p "Database\ApplicationPostgreSQLDB\ApplicationPostgreSQLDB.csproj" -s "Services\Authentication\Authentication.csproj"
+
+--- Update database --- 
+dotnet ef database update --context "ApplicationDbContext" -p "Database\ApplicationPostgreSQLDB\ApplicationPostgreSQLDB.csproj" -s "Services\Authentication\Authentication.csproj"
+dotnet ef database update --context "SystemDbContext" -p "Database\ApplicationPostgreSQLDB\ApplicationPostgreSQLDB.csproj" -s "Services\Authentication\Authentication.csproj"
+
+--- Remove migration ---
+dotnet ef migrations remove --context "ApplicationDbContext" -p "Database\ApplicationPostgreSQLDB\ApplicationPostgreSQLDB.csproj" -s "Services\Authentication\Authentication.csproj" -f
+dotnet ef migrations remove --context "SystemDbContext" -p "Database\ApplicationPostgreSQLDB\ApplicationPostgreSQLDB.csproj" -s "Services\Authentication\Authentication.csproj" -f
