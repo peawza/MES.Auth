@@ -197,34 +197,35 @@ namespace Authentication.Controllers
 
                 #region Set cookie
 
-                if (oUser.Remember == true)
-                {
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(new Models.UserLoginDo()
-                    {
-                        UserName = appUser.UserName,
-                        Password = oUser.Password,
-                        Remember = true
-                    });
+                //if (oUser.Remember == true)
+                //{
+                //    string json = Newtonsoft.Json.JsonConvert.SerializeObject(new Models.UserLoginDo()
+                //    {
+                //        UserName = appUser.UserName,
+                //        Password = oUser.Password,
+                //        Remember = true
+                //    });
 
-                    Utils.Extensions.Encryption encrypt = new Utils.Extensions.Encryption(Constants.AUTH.REMEMBER_USER_KEY);
-                    string rememberCookie = encrypt.Encrypt(json);
+                //    Utils.Extensions.Encryption encrypt = new Utils.Extensions.Encryption(Constants.AUTH.REMEMBER_USER_KEY);
+                //    string rememberCookie = encrypt.Encrypt(json);
 
-                    HttpContext.Response.Cookies.Append(
-                        cookieName,
-                        rememberCookie,
-                        new Microsoft.AspNetCore.Http.CookieOptions
-                        {
-                            Expires = DateTimeOffset.UtcNow.AddDays(7),
-                            HttpOnly = true
-                        }
-                    );
-                }
-                else
-                {
-                    if (HttpContext.Request.Cookies.ContainsKey(cookieName))
-                        HttpContext.Response.Cookies.Delete(cookieName);
-                }
-
+                //    HttpContext.Response.Cookies.Append(
+                //        cookieName,
+                //        rememberCookie,
+                //        new Microsoft.AspNetCore.Http.CookieOptions
+                //        {
+                //            Expires = DateTimeOffset.UtcNow.AddDays(7),
+                //            HttpOnly = true
+                //        }
+                //    );
+                //}
+                //else
+                //{
+                //    if (HttpContext.Request.Cookies.ContainsKey(cookieName))
+                //        HttpContext.Response.Cookies.Delete(cookieName);
+                //}
+                if (HttpContext.Request.Cookies.ContainsKey(cookieName))
+                    HttpContext.Response.Cookies.Delete(cookieName);
                 #endregion
 
                 //if (concurrentRes.StatusCode == System.Net.HttpStatusCode.OK)
