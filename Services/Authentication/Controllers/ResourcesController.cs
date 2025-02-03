@@ -35,8 +35,11 @@ namespace Authentication.Controllers
         public async Task<IActionResult> GetMessages()
         {
             LocalizedMessagesCriteria localizedMessagesCriteria = new LocalizedMessagesCriteria();
+            var results = await service.LocalizedMessages(localizedMessagesCriteria);
 
-            return Ok(await Task.FromResult(this.service.LocalizedMessages(localizedMessagesCriteria)));
+
+
+            return Ok(results);
 
         }
 
