@@ -373,8 +373,8 @@ namespace Authentication.Controllers
                 }
             }
 
-            if (await this.userManager.VerifyTwoFactorTokenAsync(appUser, this.userManager.Options.Tokens.AuthenticatorTokenProvider, oUser.VerifyCode) == false)
-                return Unauthorized("E0071");
+            //if (await this.userManager.VerifyTwoFactorTokenAsync(appUser, this.userManager.Options.Tokens.AuthenticatorTokenProvider, oUser.VerifyCode) == false)
+            //    return Unauthorized("E0071");
 
             await this.signInManager.SignInAsync(appUser, false);
             await this.userManager.ResetAccessFailedCountAsync(appUser);

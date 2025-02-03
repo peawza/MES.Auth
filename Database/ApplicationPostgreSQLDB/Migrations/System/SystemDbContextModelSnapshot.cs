@@ -48,6 +48,62 @@ namespace ApplicationPostgreSQLDB.Migrations.System
                     b.ToTable("tb_Application", "public");
                 });
 
+            modelBuilder.Entity("Application.Models.tb_LocalizedMessages", b =>
+                {
+                    b.Property<string>("MessageCode")
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("MessageType")
+                        .HasColumnType("VARCHAR(20)");
+
+                    b.Property<string>("CreateBy")
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MessageNameEN")
+                        .HasColumnType("VARCHAR(500)");
+
+                    b.Property<string>("MessageNameTH")
+                        .HasColumnType("VARCHAR(500)");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("VARCHAR(256)");
+
+                    b.HasKey("MessageCode", "MessageType");
+
+                    b.ToTable("tb_LocalizedMessages", "public");
+                });
+
+            modelBuilder.Entity("Application.Models.tb_LocalizedResources", b =>
+                {
+                    b.Property<string>("ScreenCode")
+                        .HasColumnType("VARCHAR(20)");
+
+                    b.Property<string>("ObjectID")
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("CreateBy")
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("VARCHAR(256)");
+
+                    b.Property<string>("ResourcesEN")
+                        .HasColumnType("VARCHAR(256)");
+
+                    b.Property<string>("ResourcesTH")
+                        .HasColumnType("VARCHAR(256)");
+
+                    b.HasKey("ScreenCode", "ObjectID");
+
+                    b.ToTable("tb_LocalizedResources", "public");
+                });
+
             modelBuilder.Entity("Application.Models.tb_MenuName", b =>
                 {
                     b.Property<string>("AppCode")

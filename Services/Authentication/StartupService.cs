@@ -1,5 +1,6 @@
 ﻿using Authentication.Repositories;
 using Authentication.Services;
+using Utils.Services;
 
 namespace Authentication
 {
@@ -9,6 +10,8 @@ namespace Authentication
         {
             /* --- Repositories --- */
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
+            services.AddTransient<IEmailService, EmailService>();
+            //EmailService : IEmailService
             services.AddTransient<ISystemRepository, SystemRepository>();
             services.AddTransient<ISSS030Repository, SSS030Repository>();
             services.AddTransient<ISSS040Repository, SSS040Repository>();
@@ -16,6 +19,10 @@ namespace Authentication
             services.AddTransient<ISSS060Repository, SSS060Repository>();
             services.AddTransient<ISSS070Repository, SSS070Repository>();
             services.AddTransient<ISSS091Repository, SSS091Repository>();
+
+
+            services.AddTransient<IResourcesRepository, ResourcesRepository>();
+
             /* --- Services --- */
             services.AddTransient<ISystemService, SystemService>();
             services.AddTransient<ISSS030Service, SSS030Service>();
@@ -25,6 +32,8 @@ namespace Authentication
             services.AddTransient<ISSS070Service, SSS070Service>();
             services.AddTransient<ISSS091Service, SSS091Service>();
 
+
+            services.AddTransient<IResouresService, ResouresService>();
         }
     }
 }
