@@ -1,9 +1,6 @@
 ﻿using Application;
 using Authentication.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Diagnostics;
-using Utils.Constants;
 
 namespace Authentication.Repositories
 {
