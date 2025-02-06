@@ -10,7 +10,7 @@ using Utils.Services;
 
 namespace Authentication.Controllers
 {
-    [Route("api/v1/auth/[controller]")]
+    [Route("[controller]")]
     public class SSS010Controller : ControllerBase
     {
         private readonly ApplicationUserManager userManager;

@@ -85,14 +85,6 @@ namespace Authentication.Repositories
                                     ActiveFlag = uu.ActiveFlag
                                 });
 
-                //result.TotalRecords = dbResult.Count();
-
-                //dbResult = (from r in dbResult
-                //            orderby r.UserName
-                //            select r)
-                //    .Skip(oCriteria.Skip)
-                //    .Take(oCriteria.Take);
-
                 var dbResultList = dbResult.ToList();
 
                 List<UserRoleSearchDo> roles = (from uur in (from ur in this.appDb.UserRoles.AsNoTracking()

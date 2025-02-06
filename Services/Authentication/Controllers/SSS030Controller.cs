@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Authentication.Services;
-using Utils.Extensions;
-using Authentication.Models;
 using Application.Models;
 using Authentication.Constants;
+using Authentication.Models;
+using Authentication.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Utils.Extensions;
 using Utils.Services;
 
 namespace Authentication.Controllers
 {
     [Authorize]
-    [Route("api/v1/auth/[controller]")]
+    [Route("[controller]")]
     public class SSS030Controller : ControllerBase
     {
         private readonly ApplicationUserManager userManager;
@@ -49,7 +49,7 @@ namespace Authentication.Controllers
         }
         [HttpPost]
         [Route("GetUser")]
-        [Authorize(Policy = "SSS031-OpenUser")]
+        //[Authorize(Policy = "SSS031-OpenUser")]
         [TypeFilter(typeof(ActionExceptionFilter))]
         public async Task<IActionResult> GetUser([FromBody] UserCriteriaDo oCriteria)
         {
@@ -57,7 +57,6 @@ namespace Authentication.Controllers
         }
         [HttpPost]
         [Route("AddUser")]
-        [Authorize(Policy = "SSS031-AddUser")]
         [TypeFilter(typeof(ActionExceptionFilter))]
         public async Task<IActionResult> AddUser([FromBody] UpdateUserDo oUser)
         {
@@ -108,7 +107,7 @@ namespace Authentication.Controllers
         }
         [HttpPost]
         [Route("UpdateUser")]
-        [Authorize(Policy = "SSS031-UpdateUser")]
+
         [TypeFilter(typeof(ActionExceptionFilter))]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDo oUser)
         {
@@ -120,9 +119,9 @@ namespace Authentication.Controllers
             {
                 oUser.UpdateDate = Utils.Extensions.IOUtil.GetCurrentDateTime;
                 oUser.UpdateBy = ClaimHelper.GetUserNumber(User.Claims);
-       
-                
-                oldRoleDo? oldRole   =    await this.userManager.UpdateAsync(oUser, true);
+
+
+                oldRoleDo? oldRole = await this.userManager.UpdateAsync(oUser, true);
                 result.Data = this.service.GetUser(new UserCriteriaDo()
                 {
                     AppCode = oUser.AppCode,
@@ -140,7 +139,7 @@ namespace Authentication.Controllers
         }
         [HttpPost]
         [Route("DeleteUser")]
-        [Authorize(Policy = "SSS031-DeleteUser")]
+
         [TypeFilter(typeof(ActionExceptionFilter))]
         public async Task<IActionResult> DeleteUser([FromBody] UpdateUserDo oUser)
         {

@@ -1,25 +1,19 @@
-using Microsoft.AspNetCore.Mvc;
-using Authentication.Services;
-using Authentication.Constants;
-using Application.Models;
-using Utils.Extensions;
 using Authentication.Models;
-using Utils.Services;
-using System.Globalization;
-using System.Text.Encodings.Web;
-using System.Text.Json;
+using Authentication.Services;
+using Microsoft.AspNetCore.Mvc;
+using Utils.Extensions;
 
 namespace Authentication.Controllers
 {
-    [Route("api/v1/auth/[controller]")]
+    [Route("[controller]")]
     public class SSS091Controller : ControllerBase
     {
         private readonly ISSS091Service service;
-        private readonly ILogger<SSS070Controller> logger;
+        private readonly ILogger<SSS091Controller> logger;
 
         public SSS091Controller(
             ISSS091Service service,
-            ILogger<SSS070Controller> logger
+            ILogger<SSS091Controller> logger
         )
         {
             this.service = service;
