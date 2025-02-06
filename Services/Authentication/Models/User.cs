@@ -30,7 +30,7 @@ namespace Authentication.Models
             this.Roles = new List<UserRoleDo>();
         }
 
-        public oldRoleDo? OldRoles { get; set; } 
+        public oldRoleDo? OldRoles { get; set; }
 
     }
     public class UserRoleDo
@@ -53,7 +53,9 @@ namespace Authentication.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Remark { get; set; }
+        public string? LanguageCode { get; set; }
         public bool ActiveFlag { get; set; }
+
 
         public List<UpdateUserRole> Roles { get; set; }
 
@@ -83,6 +85,7 @@ namespace Authentication.Models
         public int UserNumber { get; set; }
         public string UserName { get; set; }
         public string Name { get; set; }
+        public string LanguageCode { get; set; }
         public string NameWithCode { get; set; }
     }
 

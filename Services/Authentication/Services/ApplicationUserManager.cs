@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Authentication.Repositories;
-using Application.Models;
+﻿using Application.Models;
 using Authentication.Models;
-using System.Collections.Generic;
+using Authentication.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace Authentication.Services
 {
@@ -41,6 +40,7 @@ namespace Authentication.Services
                     LastUpdatePasswordDate = user.CreateDate,
                     ActiveDate = (user.ActiveFlag == true) ? user.CreateDate : null,
                     InActiveDate = !(user.ActiveFlag == true) ? user.CreateDate : null,
+
                     Email = user.Email,
                     EmailConfirmed = true,
                     TwoFactorEnabled = true
@@ -91,24 +91,26 @@ namespace Authentication.Services
 
             if (updateRole == true)
             {
-         
+
                 List<string> addRoles = new List<string>();
                 List<string> delRoles = new List<string>();
-                oldRole.addRole= new List<string>();
+                oldRole.addRole = new List<string>();
                 oldRole.delRole = new List<string>();
 
 
                 var roles = await this.GetRolesAsync(appUser);
                 foreach (var role in roles)
                 {
-                    if (user.Roles.Where(x => x.Name == role).Count() == 0) {
+                    if (user.Roles.Where(x => x.Name == role).Count() == 0)
+                    {
                         delRoles.Add(role);
                         oldRole.delRole.Add(role);
                     }
                 }
                 foreach (var role in user.Roles)
                 {
-                    if (roles.Where(x => x == role.Name).Count() == 0) {
+                    if (roles.Where(x => x == role.Name).Count() == 0)
+                    {
                         addRoles.Add(role.Name);
                         oldRole.addRole.Add(role.RoleName);
                     }

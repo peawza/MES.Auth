@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Models
 {
@@ -38,6 +33,11 @@ namespace Application.Models
         [Column(TypeName = "VARCHAR")]
         [Comment("Remark, more note.")]
         public string? Remark { get; set; }
+
+        [Column(TypeName = "VARCHAR")]
+        [Comment("Language Code login")]
+        public string? LanguageCode { get; set; }
+
 
         [Required]
         [Column(TypeName = "DATE")]

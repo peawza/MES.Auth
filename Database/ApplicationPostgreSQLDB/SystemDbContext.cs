@@ -64,12 +64,10 @@ namespace Application
                .WithOne(e => e.MenuSetting)
                .HasForeignKey("AppCode", "MenuId");
 
-            //modelBuilder.Entity<tb_LocalizedMessages>()
-            //    .HasKey(e => new { e.MessageCode, e.MessageType });
+
             modelBuilder.Entity<tb_LocalizedMessages>().ToTable("tb_LocalizedMessages");
             modelBuilder.Entity<tb_LocalizedResources>().ToTable("tb_LocalizedResources");
-            //modelBuilder.Entity<tb_LocalizedResources>()
-            //    .HasKey(e => new { e.ScreenCode, e.ObjectID });
+
         }
     }
 }

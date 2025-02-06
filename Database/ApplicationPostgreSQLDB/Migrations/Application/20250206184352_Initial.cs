@@ -85,6 +85,7 @@ namespace ApplicationPostgreSQLDB.Migrations.Application
                     FirstName = table.Column<string>(type: "VARCHAR(100)", nullable: false, comment: "First Name"),
                     LastName = table.Column<string>(type: "VARCHAR(100)", nullable: false, comment: "Last Name"),
                     Remark = table.Column<string>(type: "VARCHAR", nullable: true, comment: "Remark, more note."),
+                    LanguageCode = table.Column<string>(type: "VARCHAR", nullable: true, comment: "Language Code login"),
                     CreateDate = table.Column<DateTime>(type: "DATE", nullable: false, comment: "Create Date"),
                     CreateBy = table.Column<int>(type: "integer", nullable: false, comment: "Create By"),
                     UpdateDate = table.Column<DateTime>(type: "DATE", nullable: false, comment: "Update Date"),

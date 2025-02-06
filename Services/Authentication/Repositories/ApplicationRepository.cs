@@ -29,7 +29,8 @@ namespace Authentication.Repositories
                     {
                         UserNumber = ui.UserNumber,
                         UserName = ui.UserName,
-                        Name = ui.FirstName + " " + ui.LastName
+                        Name = ui.FirstName + " " + ui.LastName,
+                        LanguageCode = ui.LanguageCode
                     }).FirstOrDefault();
         }
         public void AddUserInfo(ApplicationUser appUser, UpdateUserDo user)
@@ -50,6 +51,7 @@ namespace Authentication.Repositories
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Remark = user.Remark,
+                        LanguageCode = user.LanguageCode,
                         CreateDate = user.CreateDate.Value,
                         CreateBy = user.CreateBy.Value,
                         UpdateDate = user.CreateDate.Value,
@@ -78,6 +80,7 @@ namespace Authentication.Repositories
                     userInfo.FirstName = user.FirstName;
                     userInfo.LastName = user.LastName;
                     userInfo.Remark = user.Remark;
+                    userInfo.LanguageCode = user.LanguageCode;
                     userInfo.UpdateDate = user.UpdateDate.Value;
                     userInfo.UpdateBy = user.UpdateBy.Value;
 

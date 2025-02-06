@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Master.Libs.Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
@@ -12,6 +13,15 @@ namespace Application
         {
         }
 
+        public virtual DbSet<tb_Department> Department { get; set; }
+        public virtual DbSet<tb_GroupPermission> GroupPermission { get; set; }
+        public virtual DbSet<tb_Module> Module { get; set; }
+        public virtual DbSet<tb_Permission> tb_Permission { get; set; }
+        public virtual DbSet<tb_Role> tb_Role { get; set; }
+        public virtual DbSet<tb_Screen> tb_Screen { get; set; }
+        public virtual DbSet<tb_ScreenFunction> tb_ScreenFunction { get; set; }
+
+
         public static void InitialService(IServiceCollection services, string connectionString)
         {
             services.AddDbContext<SystemDbContext>(options =>
@@ -22,7 +32,7 @@ namespace Application
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasDefaultSchema("public");
+            modelBuilder.HasDefaultSchema("mes");
 
 
         }

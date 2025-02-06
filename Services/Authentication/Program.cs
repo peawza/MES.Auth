@@ -18,6 +18,7 @@ var connectionString =
     builder.Configuration.GetConnectionString("DBConnection");
 Application.ApplicationDbContext.InitialService(builder.Services, connectionString);
 Application.SystemDbContext.InitialService(builder.Services, connectionString);
+Application.MESSystemDbContext.InitialService(builder.Services, connectionString);
 
 IdentityBuilder identity = builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {

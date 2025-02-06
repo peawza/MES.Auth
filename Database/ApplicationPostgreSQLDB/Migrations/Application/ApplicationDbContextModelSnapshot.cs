@@ -151,6 +151,10 @@ namespace ApplicationPostgreSQLDB.Migrations.Application
                         .HasColumnType("VARCHAR(100)")
                         .HasComment("First Name");
 
+                    b.Property<string>("LanguageCode")
+                        .HasColumnType("VARCHAR")
+                        .HasComment("Language Code login");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("VARCHAR(100)")

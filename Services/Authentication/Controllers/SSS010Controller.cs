@@ -3,7 +3,6 @@ using Authentication.Constants;
 using Authentication.Models;
 using Authentication.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 using System.Text.Encodings.Web;
 using Utils.Extensions;
 using Utils.Services;
@@ -75,259 +74,11 @@ namespace Authentication.Controllers
                 User = user
             });
         }
+
+
+
         [HttpPost]
         [Route("Login")]
-        [TypeFilter(typeof(ActionExceptionFilter))]
-        public async Task<IActionResult> Login([FromBody] Models.UserLoginDo oUser)
-        {
-            string cookieName = string.Format("{0}:{1}", oUser.AppCode, Constants.AUTH.REMEMBER_USER_NAME);
-
-            ApplicationUser? appUser = await this.userManager.FindByNameAsync(oUser.UserName);
-
-            if (appUser == null)
-                return NotFound("E0076");
-
-
-            bool flagActive = appUser.ActiveFlag;
-            if (flagActive == true)
-            {
-                var roles = await this.userManager.GetRolesAsync(appUser);
-                if (roles.Count > 0)
-                {
-                    foreach (string role in roles)
-                    {
-                        ApplicationRole? appRole = await this.roleManager.FindByNameAsync(role);
-                        if (appRole != null)
-                        {
-                            flagActive = appRole.ActiveFlag;
-                            if (flagActive == false)
-                                break;
-                        }
-                    }
-                }
-            }
-            if (flagActive == false)
-                return Unauthorized("E0004");
-
-            if (appUser.FirstLoginFlag == true)
-                return Unauthorized("E0073");
-
-            if (oUser.Remember == true && oUser.Password == "@@@Pwd123")
-            {
-                string serialize = "";
-                if (Request.Cookies.TryGetValue(cookieName, out serialize))
-                {
-                    Utils.Extensions.Encryption encrypt = new Utils.Extensions.Encryption(Constants.AUTH.REMEMBER_USER_KEY);
-                    string? json = encrypt.Decrypt(serialize);
-
-                    Models.UserLoginDo? rUser = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.UserLoginDo>(json);
-                    if (rUser != null)
-                        oUser.Password = rUser.Password;
-                }
-            }
-
-            int remindPasswordExpired = 0;
-            bool isExpired = false;
-
-            if (appUser.TwoFactorEnabled == false)
-            {
-                Microsoft.AspNetCore.Identity.SignInResult res
-                    = await this.signInManager.PasswordSignInAsync(oUser.UserName, oUser.Password, false, true);
-                if (res.Succeeded)
-                {
-                    if (appUser.PasswordAge != null)
-                    {
-                        int diff = 0;
-                        if (appUser.LastUpdatePasswordDate == null)
-                            isExpired = true;
-                        else
-                        {
-                            diff = appUser.LastUpdatePasswordDate.Value
-                                        .AddDays(appUser.PasswordAge.Value)
-                                        .CompareTo(Utils.Extensions.IOUtil.GetCurrentDateTime);
-                            if (diff < 0)
-                                isExpired = true;
-                        }
-
-                        if (isExpired == false
-                            && appUser.LastLoginDate != null)
-                        {
-                            if (Utils.Constants.COMMON.REMIND_PASSWORD_DATE != null)
-                            {
-                                int remind = 0;
-                                if (int.TryParse(Utils.Constants.COMMON.REMIND_PASSWORD_DATE, out remind))
-                                {
-                                    if (diff <= remind)
-                                    {
-                                        remindPasswordExpired = diff;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (isExpired)
-                    {
-                        await this.signInManager.SignOutAsync();
-                        return Unauthorized("E0008");
-                    }
-                }
-                else if (res.IsLockedOut)
-                    return Unauthorized($"E0006:{AUTH.LOGIN_WAITING_TIME:N0}");
-                else
-                {
-                    int accessFailedCount = await this.userManager.GetAccessFailedCountAsync(appUser);
-                    int attemptsLeft = AUTH.MAXIMUM_LOGIN_FAIL - accessFailedCount;
-
-                    return Unauthorized($"E0005:{attemptsLeft:N0}");
-                }
-
-                appUser.LastLoginDate = Utils.Extensions.IOUtil.GetCurrentDateTime;
-                await this.userManager.UpdateAsync(appUser);
-
-                string token = await this.signInManager.GenerateToken(oUser.AppCode, appUser);
-                string rtoken = await this.userManager.GenerateRefreshTokenAsync(appUser);
-
-                //HttpClient client = new HttpClient();
-                //Uri uri_concurrent = new Uri(Utils.Constants.COMMON.CONCURRENT_URL + "/api/concurrent/create");
-                //client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                //HttpResponseMessage concurrentRes = await client.PostAsync(uri_concurrent, null);
-
-                var userInfo = this.userManager.GetUserInfo(appUser);
-
-                #region Set cookie
-
-                //if (oUser.Remember == true)
-                //{
-                //    string json = Newtonsoft.Json.JsonConvert.SerializeObject(new Models.UserLoginDo()
-                //    {
-                //        UserName = appUser.UserName,
-                //        Password = oUser.Password,
-                //        Remember = true
-                //    });
-
-                //    Utils.Extensions.Encryption encrypt = new Utils.Extensions.Encryption(Constants.AUTH.REMEMBER_USER_KEY);
-                //    string rememberCookie = encrypt.Encrypt(json);
-
-                //    HttpContext.Response.Cookies.Append(
-                //        cookieName,
-                //        rememberCookie,
-                //        new Microsoft.AspNetCore.Http.CookieOptions
-                //        {
-                //            Expires = DateTimeOffset.UtcNow.AddDays(7),
-                //            HttpOnly = true
-                //        }
-                //    );
-                //}
-                //else
-                //{
-                //    if (HttpContext.Request.Cookies.ContainsKey(cookieName))
-                //        HttpContext.Response.Cookies.Delete(cookieName);
-                //}
-                if (HttpContext.Request.Cookies.ContainsKey(cookieName))
-                    HttpContext.Response.Cookies.Delete(cookieName);
-                #endregion
-
-                //if (concurrentRes.StatusCode == System.Net.HttpStatusCode.OK)
-                if (userInfo != null)
-                {
-                    this.WriteRefreshToken(rtoken, appUser.Id);
-
-                    return Ok(new
-                    {
-                        TwoFactorEnabled = appUser.TwoFactorEnabled,
-                        Id = appUser.Id,
-                        UserNumber = userInfo.UserNumber,
-                        UserName = appUser.UserName,
-                        DisplayName = userInfo.Name.ToUpper(),
-                        Token = token,
-                        RefreshToken = rtoken,
-                        Timeout = Convert.ToDouble(this.configuration["JwtExpireMinutes"]),
-                        RemindPasswordExpired = remindPasswordExpired
-                    });
-                }
-                else
-                {
-                    //var _res = concurrentRes.Content.ReadAsStringAsync().Result;
-                    //ErrorConCurrentResponse jsonRes = JsonSerializer.Deserialize<ErrorConCurrentResponse>(_res);
-                    return Unauthorized("Unauthorized");
-                }
-            }
-
-            if (await this.userManager.IsLockedOutAsync(appUser))
-                return Unauthorized($"E0006:{AUTH.LOGIN_WAITING_TIME:N0}");
-
-            if (await this.userManager.CheckPasswordAsync(appUser, oUser.Password) == false)
-            {
-                await this.userManager.AccessFailedAsync(appUser);
-
-                int accessFailedCount = await this.userManager.GetAccessFailedCountAsync(appUser);
-                int attemptsLeft = AUTH.MAXIMUM_LOGIN_FAIL - accessFailedCount;
-
-                return Unauthorized($"E0005:{attemptsLeft:N0}");
-            }
-
-            if (appUser.PasswordAge != null)
-            {
-                if (appUser.LastUpdatePasswordDate == null)
-                    isExpired = true;
-                else
-                {
-                    int diff = appUser.LastUpdatePasswordDate.Value
-                                .AddDays(appUser.PasswordAge.Value)
-                                .CompareTo(Utils.Extensions.IOUtil.GetCurrentDateTime);
-                    if (diff < 0)
-                        isExpired = true;
-                }
-            }
-
-            if (isExpired)
-                return Unauthorized("E0008");
-
-            string authenticatorUrl = "";
-            List<string> sharedKeys = new List<string>();
-
-            if (remindPasswordExpired == 0)
-            {
-                string? unformattedKey = await this.userManager.GetAuthenticatorKeyAsync(appUser);
-                if (string.IsNullOrEmpty(unformattedKey))
-                {
-                    await this.userManager.ResetAuthenticatorKeyAsync(appUser);
-                    unformattedKey = await this.userManager.GetAuthenticatorKeyAsync(appUser);
-                }
-
-                ApplicationDo? app = this.service.GetApplication(new ApplicationDo()
-                {
-                    AppCode = oUser.AppCode
-                });
-                authenticatorUrl = string.Format(
-                                        CultureInfo.InvariantCulture,
-                                        "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
-                                        this.urlEncoder.Encode(app?.AppName),
-                                        this.urlEncoder.Encode(appUser.Email),
-                                        unformattedKey);
-
-                int currentPosition = 0;
-                while (currentPosition + 4 < unformattedKey.Length)
-                {
-                    sharedKeys.Add(unformattedKey.Substring(currentPosition, 4).ToLower());
-                    currentPosition += 4;
-                }
-                if (currentPosition < unformattedKey.Length)
-                {
-                    sharedKeys.Add(unformattedKey.Substring(currentPosition).ToLower());
-                }
-            }
-
-            return Ok(new
-            {
-                TwoFactorEnabled = appUser.TwoFactorEnabled,
-                AuthenticatorUrl = authenticatorUrl,
-                SharedKeys = sharedKeys
-            });
-        }
-        [HttpPost]
-        [Route("VerifyLogin")]
         [TypeFilter(typeof(ActionExceptionFilter))]
         public async Task<IActionResult> VerifyLogin([FromBody] Models.UserLoginDo oUser)
         {
@@ -360,22 +111,9 @@ namespace Authentication.Controllers
             if (appUser.FirstLoginFlag == true)
                 return Unauthorized("E0073");
 
-            if (oUser.Remember == true && oUser.Password == "@@@Pwd123")
-            {
-                string serialize = "";
-                if (Request.Cookies.TryGetValue(cookieName, out serialize))
-                {
-                    Utils.Extensions.Encryption encrypt = new Utils.Extensions.Encryption(Constants.AUTH.REMEMBER_USER_KEY);
-                    string? json = encrypt.Decrypt(serialize);
 
-                    Models.UserLoginDo? rUser = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.UserLoginDo>(json);
-                    if (rUser != null)
-                        oUser.Password = rUser.Password;
-                }
-            }
 
-            //if (await this.userManager.VerifyTwoFactorTokenAsync(appUser, this.userManager.Options.Tokens.AuthenticatorTokenProvider, oUser.VerifyCode) == false)
-            //    return Unauthorized("E0071");
+
 
             await this.signInManager.SignInAsync(appUser, false);
             await this.userManager.ResetAccessFailedCountAsync(appUser);
@@ -426,33 +164,14 @@ namespace Authentication.Controllers
 
             #region Set cookie
 
-            if (oUser.Remember == true)
-            {
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(new Models.UserLoginDo()
-                {
-                    UserName = appUser.UserName,
-                    Password = oUser.Password,
-                    Remember = true
-                });
 
-                Utils.Extensions.Encryption encrypt = new Utils.Extensions.Encryption(Constants.AUTH.REMEMBER_USER_KEY);
-                string rememberCookie = encrypt.Encrypt(json);
-
-                HttpContext.Response.Cookies.Append(
-                    cookieName,
-                    rememberCookie,
-                    new Microsoft.AspNetCore.Http.CookieOptions
-                    {
-                        Expires = DateTimeOffset.UtcNow.AddDays(7),
-                        HttpOnly = true
-                    }
-                );
-            }
-            else
+            if (HttpContext.Request.Cookies.ContainsKey(cookieName))
             {
-                if (HttpContext.Request.Cookies.ContainsKey(cookieName))
-                    HttpContext.Response.Cookies.Delete(cookieName);
+
+                HttpContext.Response.Cookies.Delete(cookieName);
             }
+
+
 
             #endregion
 
@@ -462,6 +181,7 @@ namespace Authentication.Controllers
                 Id = appUser.Id,
                 UserNumber = userInfo.UserNumber,
                 UserName = appUser.UserName,
+                LanguageCode = userInfo.LanguageCode,
                 DisplayName = userInfo.Name.ToUpper(),
                 Token = token,
                 RefreshToken = rtoken,
@@ -587,7 +307,8 @@ namespace Authentication.Controllers
                 FirstName = "superadmin",
                 LastName = "Administrator",
                 Email = "superadmin@csithai.com",
-                Remark = null,
+                Remark = "Test",
+                LanguageCode = "EN",
                 ActiveFlag = true,
                 Roles = new List<UpdateUserRole>()
                 {
