@@ -48,8 +48,8 @@ namespace Authentication.Repositories
                 List<MESScreenResult> result = await (from screen in db.Screen
                                                       join module in db.Module on screen.ModuleCode equals module.ModuleCode
                                                       join subModule in db.SubModule on screen.SubModuleCode equals subModule.SubModuleCode
-
                                                       where screen.SupportDeviceType.Contains(criteria.SupportDeviceType)
+                                                      orderby module.Seq, subModule.Seq, screen.Seq
                                                       select new MESScreenResult
                                                       {
                                                           ScreenId = screen.ScreenId,
