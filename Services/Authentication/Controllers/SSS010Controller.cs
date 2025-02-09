@@ -3,6 +3,10 @@ using Authentication.Constants;
 using Authentication.Models;
 using Authentication.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Encodings.Web;
 using Utils.Extensions;
 using Utils.Services;
@@ -188,6 +192,32 @@ namespace Authentication.Controllers
                 Timeout = Convert.ToDouble(this.configuration["JwtExpireMinutes"]),
                 RemindPasswordExpired = remindPasswordExpired
             });
+        }
+
+
+        [HttpPost]
+        [Route("testLogin")]
+        [TypeFilter(typeof(ActionExceptionFilter))]
+        public string GenerateToken(string userId)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("182a61aa-dcf9-4e54-812d-95ace611b6fd"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "MES",
+                audience: "MES",
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         [HttpPost]
